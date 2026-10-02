@@ -1,0 +1,6 @@
+{
+  "name": "CivicFix",
+  "description": "AI-Powered Smart City Issue Management Platform connecting citizens and municipal departments to report, verify, route, track, and resolve civic infrastructure issues.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

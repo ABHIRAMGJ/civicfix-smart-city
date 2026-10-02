@@ -1,0 +1,32 @@
+name: CivicFix CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: TypeScript & Schema Lint Check
+        run: npm run lint
+
+      - name: Build Production Bundle
+        run: npm run build
+
+      - name: Verify Docker Image Build
+        run: docker build -t civicfix:latest .

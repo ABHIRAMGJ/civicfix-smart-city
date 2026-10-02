@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  civicfix-app:
+    build: .
+    container_name: civicfix-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - SQL_HOST=postgres
+      - SQL_DB_NAME=civicfix
+      - SQL_USER=civicfix_app
+      - SQL_PASSWORD=civicfix_secret
+      - REDIS_URL=redis://redis:6379
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: civicfix-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: civicfix
+      POSTGRES_USER: civicfix_app
+      POSTGRES_PASSWORD: civicfix_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: civicfix-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  ai-service:
+    image: python:3.12-slim
+    container_name: civicfix-ai-service
+    working_dir: /app
+    volumes:
+      - ./ai-service:/app
+    command: sh -c "pip install fastapi uvicorn pydantic && uvicorn main:app --host 0.0.0.0 --port 8001"
+    ports:
+      - "8001:8001"
+
+volumes:
+  pgdata:
